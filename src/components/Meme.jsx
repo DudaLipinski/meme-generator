@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import DataMeme from "../data/data.js";
 
 const Wrapper = styled.main`
   display: flex;
@@ -96,30 +95,33 @@ function Meme() {
   const [meme, setMeme] = useState({
     topText: "",
     bottomText: "",
-    randomImage: "http://i.imgflip.com/1bij.jpg",
+    randomImage: "https://i.imgflip.com/9vct.jpg",
   });
 
-  const [allMemeImages] = useState(DataMeme);
+  const [allMemes, setAllMemes] = useState([]);
+
+  useEffect(() => {
+    fetch("https://api.imgflip.com/get_memes")
+      .then((res) => res.json())
+      .then((dataMemes) => setAllMemes(dataMemes.data.memes));
+  }, []);
 
   const getRandomImage = () => {
-    const memesArray = allMemeImages.data.memes;
-    const randomNumber = Math.floor(Math.random() * memesArray.length);
+    const randomNumber = Math.floor(Math.random() * allMemes.length);
 
     setMeme((prevMeme) => {
       return {
         ...prevMeme,
-        randomImage: memesArray[randomNumber].url,
+        randomImage: allMemes[randomNumber].url,
       };
     });
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setMeme((prevMeme) => {
-      return {
-        ...meme,
-        [name]: [value],
-      };
+    setMeme({
+      ...meme,
+      [name]: [value],
     });
   };
 
